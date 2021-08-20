@@ -1,0 +1,14 @@
+#!/bin/bash
+TRS=$(curl -f -L https://boards.4channel.org/wg | grep -oE '</span><a href=\"thread\/[0-9]+\"' | sed 's/<\/span><a href="//g' | sed 's/"//g')
+for tr in $TRS
+do
+if ! grep -Fxq "${tr}" downloaded.txt 
+then
+ wget -P ~/scripts/4chan-walls/walls -nd -r -l 1 -H -D i.4cdn.org -A png,jpg,jpeg "https://boards.4chan.org/wg/${tr}"
+ echo "${tr}" >> downloaded.txt
+else
+echo "Duplicate... Aborting"
+fi
+done
+rm -rf ~/scripts/4chan-walls/walls/*s.png ~/scripts/4chan-walls/walls/*s.jpg ~/scripts/4chan-walls/walls/*s.jpeg 2> /dev/null
+
