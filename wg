@@ -1,0 +1,55 @@
+#!/bin/bash
+DIR=$(realpath "$0" |  sed 's/\/wg//g')
+function download() {
+TRS=$(curl -s "https://a.4cdn.org/wg/threads.json" | grep -oE '"no":[0-9]+' | sed 's/"no"://g')
+thn=0
+for tr in $TRS
+do
+  if ! [ -z "$1" ] && [ "$thn" == "$1" ]
+    then
+    break;
+  fi
+  
+if ! grep -Fxq "${tr}" downloaded.txt 
+then
+  thn=$((thn + 1))
+  wget -P $DIR/walls -nd -r -l 1 -H -D i.4cdn.org -A png,jpg,jpeg "https://boards.4chan.org/wg/thread/${tr}"
+  echo "${tr}" >> downloaded.txt
+else
+  echo "Duplicate... Aborting"
+fi
+done
+rm -rf $DIR/walls/*s.png $DIR/walls/*s.jpg $DIR/walls/*s.jpeg 2> /dev/null
+}
+function review() {
+ls $DIR/walls/ | sort -R |tail -$N |while read file; do
+    feh --bg-fill $DIR/walls/${file}
+   case $(echo -e "Delete\nSave\nQuit\nDelete all" | dmenu -p "What do you want to do with this image?") in
+    "Save")
+    mv $DIR/walls/$file ~/wallpapers/
+	  ;;
+    "Delete")
+	  rm -rf $DIR/walls/${file}
+	  ;;
+    "Quit")
+#	  ~/scripts/randomwall/randomwall
+	  exit 0
+	  ;;
+    "Delete all")
+#	  ~/scripts/randomwall/randomwall
+	  rm -rf $DIR/walls/*
+	  exit 0
+	  ;;
+    esac
+    review
+    break
+done
+}
+case $1 in
+    "download")
+    download $2
+    ;;
+    "review")
+    review
+    ;;
+esac

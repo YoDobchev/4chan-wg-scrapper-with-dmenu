@@ -1,0 +1,18 @@
+--- wg	2021-08-21 18:32:26.989421152 +0300
++++ wg-new	2021-08-21 18:32:47.682894624 +0300
+@@ -23,10 +23,14 @@
+ }
+ function review() {
+ ls $DIR/walls/ | sort -R |tail -$N |while read file; do
++
+     feh --bg-fill $DIR/walls/${file}
+    case $(echo -e "Delete\nSave\nQuit\nDelete all" | dmenu -p "What do you want to do with this image?") in
+     "Save")
+-    mv $DIR/walls/$file ~/wallpapers/
++    NM=$(echo | dmenu -p "Name:")
++    EXT=$(echo $file | cut -f 2 -d '.')
++    mv $DIR/walls/$file $DIR/walls/$NM.$EXT
++	  mv $DIR/walls/$NM.$EXT ~/wallpapers/
+ 	  ;;
+     "Delete")
+ 	  rm -rf $DIR/walls/${file}
