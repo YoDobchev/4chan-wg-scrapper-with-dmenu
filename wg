@@ -14,7 +14,7 @@ if ! grep -Fxq "${tr}" downloaded.txt
 then
   thn=$((thn + 1))
   wget -P $DIR/walls -nd -r -l 1 -H -D i.4cdn.org -A png,jpg,jpeg "https://boards.4chan.org/wg/thread/${tr}"
-  echo "${tr}" >> downloaded.txt
+  echo "${tr}" >> $DIR/downloaded.txt
 else
   echo "Duplicate... Aborting"
 fi
